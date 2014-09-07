@@ -7,12 +7,20 @@
   xmlns="http://www.w3.org/1999/xhtml"
   version="2.0">
   
-  <xsl:template match="/">
+  <xsl:template name="main">
     <!-- Transform the first document in the default collection(). All the documents are supposed to be 
       XHTML 1.0 documents that provide style name mappings. The documents are expected to be sorted by
       ascending specificity. When an element with the same ID is present in a more specific document, this 
       more specific element will be used. -->
-    <xsl:apply-templates mode="resolve-cascade"/>
+    <xsl:choose>
+      <xsl:when test="collection()[1]//table">
+        <xsl:apply-templates select="collection()[1]" mode="resolve-cascade"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <html/>
+      </xsl:otherwise>
+    </xsl:choose>
+    
   </xsl:template>
   
   <xsl:template match="table[. is (//table)[1]]" mode="resolve-cascade">
