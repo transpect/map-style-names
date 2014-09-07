@@ -20,6 +20,16 @@
       <xsl:copy-of select="@*"/>
       <xsl:variable name="all-trs" as="element(tr)+" select="collection()//table[. is (//table)[1]]//tr[every $c in *[position() gt 1] satisfies ($c/self::html:td) and count(html:td) ge 2]"/>
       <xsl:variable name="max-row-length" as="xs:integer" select="xs:integer(max(for $tr in $all-trs return count($tr/td)))"/>
+      <xsl:for-each select="descendant::tr[th][every $c in * satisfies ($c/self::th)]">
+        <xsl:copy>
+          <xsl:copy-of select="@*"/>
+          <th/>
+          <xsl:copy-of select="th"/>
+          <xsl:for-each select="count(th) + 1 to $max-row-length">
+            <th/>
+          </xsl:for-each>
+        </xsl:copy>
+      </xsl:for-each>
       <xsl:for-each-group group-by="td[2]"
         select="$all-trs">
         <xsl:variable name="last" select="current-group()[last()]" as="element(tr)"/>

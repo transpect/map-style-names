@@ -31,8 +31,12 @@
     </xslout:stylesheet>
   </xsl:template>
 
-  <xsl:template match="html:tr[not(every $c in *[position() gt 1] satisfies ($c/self::html:td)) or count(html:td) lt 2]">
+  <xsl:template match="html:tr[td][not(every $c in *[position() gt 1] satisfies ($c/self::html:td)) or count(html:td) lt 2]">
     <xsl:message>Unrecognized mapping instruction <xsl:sequence select="."/> in <xsl:value-of select="base-uri()"/></xsl:message>
+  </xsl:template>
+
+  <xsl:template match="html:tr[th][every $c in * satisfies ($c/self::th)]">
+    <xsl:copy-of select="."/>
   </xsl:template>
 
   <xsl:template match="html:tr">
