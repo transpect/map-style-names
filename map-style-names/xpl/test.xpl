@@ -12,9 +12,9 @@
   version="1.0">
 
   
-  <p:input port="source" primary="true"/>
+  <p:input port="source" primary="true" sequence="true"/>
   <p:input port="paths" />
-  <p:output port="result" primary="true"/>
+  <p:output port="result" primary="true" sequence="true"/>
   
   <p:option name="debug" required="false" select="'no'"/>
   <p:option name="debug-dir-uri" required="false" select="'debug'"/>
@@ -26,8 +26,8 @@
     <p:input port="paths">
       <p:pipe port="paths" step="test"/>
     </p:input>
-    <p:with-option name="debug" select="$debug"/>
-    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:with-option name="debug" select="$debug"><p:empty/></p:with-option>
+    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"><p:empty/></p:with-option>
   </css:map-styles>
   
   

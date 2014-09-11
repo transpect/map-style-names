@@ -20,9 +20,8 @@
       <p:documentation>HTML tables where the first column contains system names for styles and the second column contains the
         corresponding user-defined names. A third column may contain comments. </p:documentation>
     </p:input>
-    <p:output port="result" primary="true" sequence="true">
-      <p:documentation>sequence is true because there may be zero output documents. The normal case is that there ist one
-        consolidated map on the output. There will be no more than one output documents on this port.</p:documentation>
+    <p:output port="result" primary="true">
+      <p:documentation>If there is no input or if the input doesn’t contain a table, it will be an empty html element.</p:documentation>
     </p:output>
 
     <p:option name="debug" required="false" select="'no'"/>
@@ -51,7 +50,7 @@
   </p:declare-step>
 
   <p:declare-step name="apply-map" type="css:apply-map">
-    <p:input port="source" primary="true" sequence="true" select="/*">
+    <p:input port="source" primary="true" select="/*" >
       <p:documentation>document with CSSa, where /*/@css:rule-selection-attribute designates the name of the
       @role, @rend, @class, etc. attribute(s) that contain(s) style names.</p:documentation>
     </p:input>
@@ -117,21 +116,21 @@
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
       <p>A wrapper for the individual other steps in this library.</p>
     </p:documentation>
-    <p:input port="source" primary="true" select="/*">
+    <p:input port="source" primary="true" sequence="true" >
       <p:documentation xmlns="http://www.w3.org/1999/xhtml">
-        <p>A document with CSSa, where the /*/@css:rule-selection-attribute designates the name of the @role, @rend, @class, etc.
+        <p>A document (or douments) with CSSa, where the /*/@css:rule-selection-attribute designates the name of the @role, @rend, @class, etc.
           attribute(s) that contain(s) style names.</p>
       </p:documentation>
     </p:input>
-    <p:input port="paths">
+    <p:input port="paths" kind="parameter" primary="true">
       <p:documentation xmlns="http://www.w3.org/1999/xhtml">
         <p>A transpect paths document (<code>c:param-set</code> with certain <code>c:param</code>s that enable cascaded
           loading).</p>
       </p:documentation>
     </p:input>
-    <p:output port="result" primary="true">
+    <p:output port="result" primary="true" sequence="true">
       <p:documentation xmlns="http://www.w3.org/1999/xhtml">
-        <p>The source document with mapped styles.</p>
+        <p>The source document(s) with mapped styles.</p>
       </p:documentation>
     </p:output>
     <p:option name="debug" required="false" select="'no'"/>
@@ -154,24 +153,30 @@
 
     <p:sink/>
 
-    <css:apply-map name="apply-map">
-      <p:input port="source">
+    <p:for-each name="iter">
+      <p:iteration-source>
         <p:pipe port="source" step="map-styles"/>
-      </p:input>
-      <p:input port="map">
-        <p:pipe port="result" step="consolidate-maps"/>
-      </p:input>
-      <p:input port="paths">
-        <p:pipe port="paths" step="map-styles"/>
-      </p:input>
-      <p:with-option name="debug" select="$debug"/>
-      <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
-    </css:apply-map>
+      </p:iteration-source>
+      <css:apply-map name="apply-map">
+        <p:input port="source">
+          <p:pipe port="current" step="iter"/>
+        </p:input>
+        <p:input port="map">
+          <p:pipe port="result" step="consolidate-maps"/>
+        </p:input>
+        <p:input port="paths">
+          <p:pipe port="paths" step="map-styles"/>
+        </p:input>
+        <p:with-option name="debug" select="$debug"/>
+        <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+      </css:apply-map>
+      <letex:store-debug extension="xhtml" name="store">
+        <p:with-option name="pipeline-step" select="concat('style-mapping/', replace(base-uri(), '^.+/(.+?)(\..+)?', '$1'), '.processed')"/>
+        <p:with-option name="active" select="$debug"/>
+        <p:with-option name="base-uri" select="$debug-dir-uri"/>
+      </letex:store-debug>
+    </p:for-each>
 
-    <letex:store-debug extension="xhtml" name="store" pipeline-step="style-mapping/processed">
-      <p:with-option name="active" select="$debug"/>
-      <p:with-option name="base-uri" select="$debug-dir-uri"/>
-    </letex:store-debug>
     
   </p:declare-step>
 
