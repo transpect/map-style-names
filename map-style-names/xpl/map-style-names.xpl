@@ -6,7 +6,7 @@
   xmlns:letex="http://www.le-tex.de/namespace"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:css="http://www.w3.org/1996/css"
-  xmlns:bc="http://transpect.le-tex.de/book-conversion"
+  xmlns:transpect="http://www.le-tex.de/namespace/transpect"
   xmlns:html="http://www.w3.org/1999/xhtml"
   version="1.0">
 
@@ -137,14 +137,14 @@
     <p:option name="debug-dir-uri" required="false" select="'debug'"/>
     <p:option name="map-name" required="false" select="'styles/map.xhtml'"/>
     
-    <bc:load-whole-cascade name="all-maps">
+    <transpect:load-whole-cascade name="all-maps">
       <p:with-option name="filename" select="$map-name">
         <p:empty/>
       </p:with-option>
       <p:input port="paths">
         <p:pipe port="paths" step="map-styles"/>
       </p:input>
-    </bc:load-whole-cascade>
+    </transpect:load-whole-cascade>
 
     <css:consolidate-maps name="consolidate-maps">
       <p:with-option name="debug" select="$debug"><p:empty/></p:with-option>

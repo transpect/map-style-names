@@ -6,7 +6,6 @@
   xmlns:letex="http://www.le-tex.de/namespace"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:css="http://www.w3.org/1996/css"
-  xmlns:bc="http://transpect.le-tex.de/book-conversion"
   xmlns:html="http://www.w3.org/1999/xhtml"
   name="test"
   version="1.0">
