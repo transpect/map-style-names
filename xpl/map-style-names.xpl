@@ -26,7 +26,8 @@
 
     <p:option name="debug" required="false" select="'no'"/>
     <p:option name="debug-dir-uri" required="false" select="'debug'"/>
-
+    <p:option name="status-dir-uri" required="false" select="'debug/status'"/>
+    
     <p:xslt name="consolidating-xsl" template-name="main">
       <p:input port="source">
         <p:documentation>The inline /nodoc serves as a fallback input because the XSLT must have some document for context</p:documentation>
@@ -65,6 +66,7 @@
     <p:input port="paths" kind="parameter"/>
     <p:option name="debug" required="false" select="'no'"/>
     <p:option name="debug-dir-uri" required="false" select="'debug'"/>
+    <p:option name="status-dir-uri" required="false" select="'debug/status'"/>
     <p:choose>
       <p:xpath-context>
         <p:pipe port="map" step="apply-map"/>
@@ -136,6 +138,7 @@
     <p:option name="debug" required="false" select="'no'"/>
     <p:option name="debug-dir-uri" required="false" select="'debug'"/>
     <p:option name="map-name" required="false" select="'styles/map.xhtml'"/>
+    <p:option name="status-dir-uri" required="false" select="'debug/status'"/>
     
     <transpect:load-whole-cascade name="all-maps">
       <p:with-option name="filename" select="$map-name">
