@@ -117,6 +117,27 @@
   <p:declare-step name="map-styles" type="css:map-styles">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
       <p>A wrapper for the individual other steps in this library.</p>
+      <p>Here’s an explanation of the style mapping concept:</p>
+      <ul>
+        <li>The tilde ('~') and the string '_-_' may be used interchangeably in both first columns. They are called “tilde
+          metacharacters”.</li>
+        <li>Table rows without <code>td</code> will be ignored.</li>
+        <li>Otherwise the first <code>td</code> in a row needs to hold the canonical (system) style name, while the second
+            <code>td</code> contains the user-defined style name that is found in the actual content and that should be mapped
+          to the system name.</li>
+        <li>Both names may contain tilde metacharacters.</li>
+        <li>The first table in the body will be used for mapping purposes.</li>
+        <li>The user style name values in the second column are treated as regular expressions that are anchored to the start of
+          the style names that appear in the source document. The matching priority increases with each row. This means that if
+          a 2nd-column name contains another 2nd-columns name as its first letters, you should put the longer name below the
+          contained name. Otherwise, the mapping rule of the shorter name will be applied no matter what the mapping rule of the
+          longer name is.</li>
+        <li>The comment column is irrelevant to the mapping process.</li>
+        <li>If there are multiple style maps in a configuration hierarchy, they will be merged. If the system names of two rows
+          match, the row from the more specific map file will win.</li>
+        <li>The merged file will appear in the debug dir als style-mapping/consolidated-map.xhtml. It will contain provenance
+          information in the first, all-<code>th</code> column, as links to the source map file for each rule.</li>
+      </ul>
     </p:documentation>
     <p:input port="source" primary="true" sequence="true" >
       <p:documentation xmlns="http://www.w3.org/1999/xhtml">
