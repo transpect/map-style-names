@@ -53,9 +53,19 @@
     <xsl:param name="css:rule-selection-attribute-names" as="xs:string+"/>
     <xsl:variable name="user-stylename-regex" as="xs:string" select="css:create-regex(html:td[2])"/>
     <xsl:variable name="target-stylename" as="xs:string" select="css:escape-name(html:td[1])"/>
+    <xsl:variable name="escaped-source-stylename" as="xs:string" select="css:escape-name(html:td[2])"/>
     <xsl:variable name="pos" as="xs:integer" select="position()"/>
     <xslout:template match="css:rule/@name[matches((../@*[name() = $cssa-orig-attname], .)[1], '{$user-stylename-regex}')]">
-      <xslout:attribute name="{{name()}}" select="replace((../@*[name() = $cssa-orig-attname], .)[1], '{$user-stylename-regex}', '{$target-stylename}$2')"/>
+      <xslout:variable name="new-name" as="xs:string" 
+        select="replace((../@*[name() = $cssa-orig-attname], .)[1], '{$user-stylename-regex}', '{$target-stylename}$2')"/>
+      <xslout:choose>
+        <xslout:when test="not(normalize-space($new-name))">
+          <xslout:attribute name="{{name()}}" select="'{$escaped-source-stylename}_-_DISABLED'"/>
+        </xslout:when>
+        <xslout:otherwise>
+          <xslout:attribute name="{{name()}}" select="$new-name"/>
+        </xslout:otherwise>
+      </xslout:choose>
     </xslout:template>  
     <xsl:for-each select="$css:rule-selection-attribute-names">
       <xslout:template match="@{.}[matches(key('style-by-name', ., $root)/(@*[name() = $cssa-orig-attname], @name)[1], '{$user-stylename-regex}')]" priority="{$pos}">
@@ -68,7 +78,8 @@
         <xslout:variable name="tmp2" as="attribute(*)">
           <xslout:apply-templates select="$tmp"/>
         </xslout:variable>
-        <xslout:attribute name="{{name()}}" select="normalize-space(string-join((replace($name-for-replacement, '^.*{$user-stylename-regex}.*$', '{$target-stylename}$2'), $tmp2[normalize-space()]),' '))"/>
+        <xslout:attribute name="{{name()}}"
+          select="normalize-space(string-join((replace($name-for-replacement, '^.*{$user-stylename-regex}.*$', '{$target-stylename}$2'), $tmp2[normalize-space()]),' '))"/>
       </xslout:template>
     </xsl:for-each>
   </xsl:template>
@@ -80,7 +91,7 @@
 
   <xsl:function name="css:create-regex" as="xs:string">
     <xsl:param name="base-stylename" as="xs:string"/>
-    <xsl:sequence select="concat('(^|\s+)', css:escape-name($base-stylename), '(\s+|_-_\S*|$)')"/>
+    <xsl:sequence select="concat('(^|\s+)', replace($base-stylename, '~', '_-_'), '(\s+|_-_\S*|$)')"/>
   </xsl:function>
 
 </xsl:stylesheet>
