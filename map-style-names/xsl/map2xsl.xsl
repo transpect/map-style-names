@@ -52,8 +52,8 @@
   <xsl:template match="html:tr">
     <xsl:param name="css:rule-selection-attribute-names" as="xs:string+"/>
     <xsl:variable name="user-stylename-regex" as="xs:string" select="css:create-regex(html:td[2])"/>
-    <xsl:variable name="target-stylename" as="xs:string" select="css:escape-name(html:td[1])"/>
-    <xsl:variable name="escaped-source-stylename" as="xs:string" select="css:escape-name(html:td[2])"/>
+    <xsl:variable name="target-stylename" as="xs:string" select="(css:escape-tilde(html:td[1]), '')[1]"/>
+    <xsl:variable name="escaped-source-stylename" as="xs:string" select="css:escape-tilde(html:td[2])"/>
     <xsl:variable name="pos" as="xs:integer" select="position()"/>
     <xslout:template match="css:rule/@name[matches((../@*[name() = $cssa-orig-attname], .)[1], '{$user-stylename-regex}')]">
       <xslout:variable name="new-name" as="xs:string" 
@@ -84,14 +84,51 @@
     </xsl:for-each>
   </xsl:template>
   
+  <xsl:variable name="regex-char-regex-chars" as="xs:string" select="'\[\]{|}.+*?()\\'"/>
+  
   <xsl:function name="css:escape-name" as="xs:string">
     <xsl:param name="name" as="xs:string"/>
-    <xsl:sequence select="replace(replace(replace($name, '~', '_-_'), '[^-_a-z0-9]', '_', 'i'), '^(\I)', '_$1')"/>
+    <xsl:variable name="tokens" as="xs:string*">
+      <xsl:analyze-string select="$name" regex="\\[{$regex-char-regex-chars}]">
+        <!-- escaped regex chars, i.e., literal brackets etc. -->
+        <xsl:matching-substring>
+          <xsl:sequence select="."/>
+        </xsl:matching-substring>
+        <xsl:non-matching-substring>
+          <xsl:analyze-string select="." regex="\[[^\]]+\]">
+            <!-- Pass thru regex character range unchanged: 
+            (still unhandled: (…) regex alternatives) -->
+            <xsl:matching-substring>
+              <xsl:sequence select="."/>
+            </xsl:matching-substring>
+            <xsl:non-matching-substring>
+              <!-- Pass thru plain ascii and regex special chars (remember, the input is a regex): -->
+              <xsl:analyze-string select="." regex="[^-_a-z0-9{$regex-char-regex-chars}]" flags="i">
+                <xsl:matching-substring>
+                  <xsl:sequence select="concat('[_', ., ']')"/>
+                </xsl:matching-substring>
+                <xsl:non-matching-substring>
+                  <xsl:sequence select="."/>
+                </xsl:non-matching-substring>
+              </xsl:analyze-string>
+            </xsl:non-matching-substring>
+          </xsl:analyze-string>
+        </xsl:non-matching-substring>
+      </xsl:analyze-string>
+    </xsl:variable>
+    <xsl:sequence select="replace(css:escape-tilde(string-join($tokens, '')), '^(\I)', '_?$1')"/>
+  </xsl:function>
+
+  <xsl:function name="css:escape-tilde" as="xs:string?">
+    <xsl:param name="input" as="xs:string?"/>
+    <xsl:if test="$input">
+      <xsl:sequence select="replace($input, '~', '_-_')"/>
+    </xsl:if>
   </xsl:function>
 
   <xsl:function name="css:create-regex" as="xs:string">
     <xsl:param name="base-stylename" as="xs:string"/>
-    <xsl:sequence select="concat('(^|\s+)', replace($base-stylename, '~', '_-_'), '(\s+|_-_\S*|$)')"/>
+    <xsl:sequence select="concat('(^|\s+)', css:escape-name($base-stylename), '(\s+|_-_\S*|$)')"/>
   </xsl:function>
 
 </xsl:stylesheet>
