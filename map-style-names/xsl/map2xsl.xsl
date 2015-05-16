@@ -60,7 +60,7 @@
         select="replace((../@*[name() = $cssa-orig-attname], .)[1], '{$user-stylename-regex}', '{$target-stylename}$2')"/>
       <xslout:choose>
         <xslout:when test="not(normalize-space($new-name))">
-          <xslout:attribute name="{{name()}}" select="'{$escaped-source-stylename}_-_DISABLED'"/>
+          <xslout:attribute name="{{name()}}" select="concat(., '_-_DISABLED')"/>
         </xslout:when>
         <xslout:otherwise>
           <xslout:attribute name="{{name()}}" select="$new-name"/>
