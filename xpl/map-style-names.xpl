@@ -139,7 +139,7 @@
           information in the first, all-<code>th</code> column, as links to the source map file for each rule.</li>
       </ul>
     </p:documentation>
-    <p:input port="source" primary="true" sequence="true" >
+    <p:input port="source" primary="true" sequence="true">
       <p:documentation xmlns="http://www.w3.org/1999/xhtml">
         <p>A document (or douments) with CSSa, where the /*/@css:rule-selection-attribute designates the name of the @role, @rend, @class, etc.
           attribute(s) that contain(s) style names.</p>
@@ -178,7 +178,7 @@
     <p:sink/>
 
     <p:for-each name="iter">
-      <p:iteration-source>
+      <p:iteration-source select="/*">
         <p:pipe port="source" step="map-styles"/>
       </p:iteration-source>
       <css:apply-map name="apply-map">
