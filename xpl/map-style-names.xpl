@@ -194,7 +194,7 @@
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
       </css:apply-map>
-      <letex:store-debug extension="xhtml" name="store">
+      <letex:store-debug name="store">
         <p:with-option name="pipeline-step" select="concat('style-mapping/', replace(base-uri(), '^.+/(.+?)(\..+)?', '$1'), '.processed')"/>
         <p:with-option name="active" select="$debug"/>
         <p:with-option name="base-uri" select="$debug-dir-uri"/>
