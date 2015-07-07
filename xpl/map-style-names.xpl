@@ -43,7 +43,7 @@
         <p:empty/>
       </p:input>
     </p:xslt>
-    <letex:store-debug pipeline-step="style-mapping/consolidated-map" extension="xhtml">
+    <letex:store-debug pipeline-step="map-style-names/consolidated-map" extension="xhtml">
       <p:with-option name="active" select="$debug"/>
       <p:with-option name="base-uri" select="$debug-dir-uri"/>
     </letex:store-debug>
@@ -55,6 +55,10 @@
       <p:documentation>document with CSSa, where /*/@css:rule-selection-attribute designates the name of the
       @role, @rend, @class, etc. attribute(s) that contain(s) style names.</p:documentation>
     </p:input>
+    <p:input port="rule-name-mapping-xsl">
+      <p:documentation>XSL that parses css-compatible and native style names</p:documentation>
+      <p:document href="../xsl/map-rule-names.xsl"/>
+    </p:input>
     <p:input port="generating-xsl">
       <p:documentation>XSL stylesheet that generates XSLT from the map</p:documentation>
       <p:document href="../xsl/map2xsl.xsl"/>
@@ -63,7 +67,6 @@
       <p:documentation>consolidated map, as produced by css:consolidate-maps</p:documentation>
     </p:input>
     <p:output port="result" primary="true"/>
-    <p:input port="paths" kind="parameter"/>
     <p:option name="debug" required="false" select="'no'"/>
     <p:option name="debug-dir-uri" required="false" select="'debug'"/>
     <p:option name="status-dir-uri" required="false" select="'debug/status'"/>
@@ -75,10 +78,24 @@
         <p:identity/>
       </p:when>
       <p:otherwise>
-        <p:xslt name="stylesheet-from-map">
-          <p:input port="source">
-            <p:pipe step="apply-map" port="map"/>
-          </p:input>
+        <p:viewport match="css:rules" name="patch-rules">
+          <p:output port="result" primary="true"/>
+          <p:xslt>
+            <p:input port="source">
+              <p:pipe port="current" step="patch-rules"/>
+              <p:pipe port="map" step="apply-map"/>
+            </p:input>
+            <p:input port="parameters"><p:empty/></p:input>
+            <p:input port="stylesheet">
+              <p:pipe port="rule-name-mapping-xsl" step="apply-map"/>
+            </p:input>
+          </p:xslt>
+        </p:viewport>
+        <letex:store-debug pipeline-step="map-style-names/map-rule-names" name="store-patched-rules">
+          <p:with-option name="active" select="$debug"/>
+          <p:with-option name="base-uri" select="$debug-dir-uri"/>
+        </letex:store-debug>
+        <p:xslt name="stylesheet-from-mapped-rules">
           <p:input port="stylesheet">
             <p:pipe port="generating-xsl" step="apply-map"/>
           </p:input>
@@ -89,23 +106,23 @@
             <p:pipe port="source" step="apply-map"/>
           </p:with-param>
         </p:xslt>
-        <letex:store-debug pipeline-step="style-mapping/generated" extension="xsl" name="store">
+        <letex:store-debug pipeline-step="map-style-names/generated" extension="xsl" name="store">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </letex:store-debug>
         <p:sink/>
         <p:xslt name="apply-generated-xsl">
           <p:input port="source">
-            <p:pipe port="source" step="apply-map"/>
+            <p:pipe port="result" step="patch-rules"/>
           </p:input>
           <p:input port="parameters">
-            <p:pipe port="paths" step="apply-map"/>
+            <p:empty/>
           </p:input>
           <p:input port="stylesheet">
-            <p:pipe port="result" step="stylesheet-from-map"/>
+            <p:pipe port="result" step="stylesheet-from-mapped-rules"/>
           </p:input>
         </p:xslt>
-        <letex:store-debug pipeline-step="style-mapping/completed">
+        <letex:store-debug pipeline-step="map-style-names/completed">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </letex:store-debug>
@@ -135,7 +152,7 @@
         <li>The comment column is irrelevant to the mapping process.</li>
         <li>If there are multiple style maps in a configuration hierarchy, they will be merged. If the system names of two rows
           match, the row from the more specific map file will win.</li>
-        <li>The merged file will appear in the debug dir als style-mapping/consolidated-map.xhtml. It will contain provenance
+        <li>The merged file will appear in the debug dir als map-style-names/consolidated-map.xhtml. It will contain provenance
           information in the first, all-<code>th</code> column, as links to the source map file for each rule.</li>
       </ul>
     </p:documentation>
@@ -188,14 +205,11 @@
         <p:input port="map">
           <p:pipe port="result" step="consolidate-maps"/>
         </p:input>
-        <p:input port="paths">
-          <p:pipe port="paths" step="map-styles"/>
-        </p:input>
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
       </css:apply-map>
       <letex:store-debug name="store">
-        <p:with-option name="pipeline-step" select="concat('style-mapping/', replace(base-uri(), '^.+/(.+?)(\..+)?', '$1'), '.processed')"/>
+        <p:with-option name="pipeline-step" select="concat('map-style-names/', replace(base-uri(), '^.+/(.+?)(\..+)?', '$1'), '.processed')"/>
         <p:with-option name="active" select="$debug"/>
         <p:with-option name="base-uri" select="$debug-dir-uri"/>
       </letex:store-debug>
