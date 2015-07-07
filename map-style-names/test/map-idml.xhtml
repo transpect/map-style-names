@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="UTF-8"?><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>uv map</title>
+  </head>
+  <body>
+    <h1>InDesign STANDARD map</h1>
+    <table>
+      <tr>
+        <th>Systemname</th>
+        <th>Benutzername</th>
+        <th>Kommentar</th>
+      </tr>
+      <tr>
+        <td>testi:popesti:</td>
+        <td>Textelemente:Fussnoten:</td>
+      </tr>
+      <tr>
+        <td>~lz</td>
+        <td>~Abstand</td>
+      </tr>
+      <tr>
+        <td>ch~it~bo</td>
+        <td>ch_kursiv_fett</td>
+      </tr>
+      <tr>
+        <td>~ni</td>
+        <td>~stumpf</td>
+      </tr>
+      <tr>
+        <td>$2:$1:$3</td>
+        <td>^(Hauptteil):(Grundtext|Textbox_1):(Liste:)</td>
+      </tr>
+      <tr>
+        <td>$1grunztext</td>
+        <td>(^|:)(GT)</td>
+      </tr>
+      <tr>
+        <td>schnurzi_burzi</td>
+        <td>Hauptteil_Textbox_1_GT_-_stumpf</td>
+      </tr>
+      <tr>
+        <td>h$2~$1</td>
+        <td>(Hauptteil)_Ueberschriften_U(\d)</td>
+      </tr>
+    </table>
+    <h2>Hinweise</h2>
+    <ul>
+      <li>Die Tilde ('~') und '_-_' kann in den ersten beiden Spalten synonym verwendet werden.</li>
+      <li>Zeilen, die kein td enthalten, werden ignoriert.</li>
+      <li>Ansonsten muss das erste td in einer Zeile den Systemnamen enthalten, das zweite den Benutzernamen. </li>
+      <li>In beiden Namen dürfen Tilden (bzw. '~') vorkommen.</li>
+      <li>Es wird der Anfang eines Style-Namens, der einem Benutzernamen-Eintrag entspricht, durch den entspr. Systemnamen
+        ersetzt. </li>
+      <li>Die Kommentarspalte ist dafür irrelevant.</li>
+      <li>Es werden die Dateien adaptions/common/styles/map.xhtml, adaptions/[Verlag]/styles/map.xhtml,
+        adaptions/[Verlag]/[Reihe]/styles/map.xhtml und [Werkdatenverzeichnis]/styles/map.xhtml gesucht und zuammengeführt.
+        Dabei wird jeweils nur die erste Tabelle einer jeden Datei einbezogen. Das Zusammenführen geht so: stimmen zwei Einträge
+        bzgl. des Systemnamens überein, gewinnt der Eintrag aus der spezifischeren Datei. </li>
+      <li>Die zusammengeführte Datei erscheint auch im debug-Verzeichnis als style-mapping/consolidated-map.xhtml. Sie enthält
+        in einer linken Spalte, die aus th-Elementen besteht, einen Verweis auf die für die jeweilige Zeile verwendete
+        Quelldatei. </li>
+      <li>Diese Datei enthält anfangs alle bisher hinterlegten Verlagsregeln. Es könnte eine gute Idee sein, workflowspezifische
+        Regeln in Reihenverzeichnisse auszugliedern. </li>
+    </ul>
+  </body>
+</html>

@@ -11,23 +11,25 @@
   version="1.0">
 
   
-  <p:input port="source" primary="true" />
-  <p:input port="map" />
-  <p:output port="result" primary="true" />
+  <p:input port="source" primary="true" sequence="true"/>
+  <p:input port="paths" />
+  <p:output port="result" primary="true" sequence="true"/>
   
   <p:option name="debug" required="false" select="'no'"/>
   <p:option name="debug-dir-uri" required="false" select="'debug'"/>
+  <p:option name="map-name" required="false" select="'styles/map.xhtml'"/>
 
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl"/>
   <p:import href="http://transpect.le-tex.de/map-style-names/xpl/map-style-names.xpl"/>
   
-  <css:apply-map name="apply-map">
+  <css:map-styles name="map-styles">
+    <p:input port="paths">
+      <p:pipe port="paths" step="test"/>
+    </p:input>
+    <p:with-option name="map-name" select="$map-name"><p:empty/></p:with-option>
     <p:with-option name="debug" select="$debug"><p:empty/></p:with-option>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"><p:empty/></p:with-option>
-    <p:input port="map">
-      <p:pipe port="map" step="test"/>
-    </p:input>
-  </css:apply-map>
+  </css:map-styles>
   
   
 </p:declare-step>
