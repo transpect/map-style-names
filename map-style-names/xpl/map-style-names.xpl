@@ -56,7 +56,8 @@
       @role, @rend, @class, etc. attribute(s) that contain(s) style names.</p:documentation>
     </p:input>
     <p:input port="rule-name-mapping-xsl">
-      <p:documentation>XSL that parses css-compatible and native style names</p:documentation>
+      <p:documentation>XSL that parses css-compatible and native style names and maps them
+      within css:rules according to the instructions in the map document.</p:documentation>
       <p:document href="../xsl/map-rule-names.xsl"/>
     </p:input>
     <p:input port="generating-xsl">
@@ -144,11 +145,12 @@
           to the system name.</li>
         <li>Both names may contain tilde metacharacters.</li>
         <li>The first table in the body will be used for mapping purposes.</li>
-        <li>The user style name values in the second column are treated as regular expressions that are anchored to the start of
-          the style names that appear in the source document. The matching priority increases with each row. This means that if
-          a 2nd-column name contains another 2nd-columns name as its first letters, you should put the longer name below the
-          contained name. Otherwise, the mapping rule of the shorter name will be applied no matter what the mapping rule of the
-          longer name is.</li>
+        <li>The user style name values in the second column are regular expressions. Likewise, the first column contains
+        replacements. You may refer to matching groups by <code>$1</code>, <code>$2</code>, etc.</li>
+        <li>All mappings will be applied to each style, sequentially from top to bottom.</li>
+        <li>A given mapping instruction will first be tested against css:rule/@native-name then against css:rule/@name. 
+          If native-name matches, the replacement is taken from first column and applied to native-name. The name attribute
+        will then be generated from the updated native-name attribute.</li>
         <li>The comment column is irrelevant to the mapping process.</li>
         <li>If there are multiple style maps in a configuration hierarchy, they will be merged. If the system names of two rows
           match, the row from the more specific map file will win.</li>
