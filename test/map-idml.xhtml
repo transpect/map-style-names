@@ -46,22 +46,34 @@
     </table>
     <h2>Hinweise</h2>
     <ul>
-      <li>Die Tilde ('~') und '_-_' kann in den ersten beiden Spalten synonym verwendet werden.</li>
-      <li>Zeilen, die kein td enthalten, werden ignoriert.</li>
-      <li>Ansonsten muss das erste td in einer Zeile den Systemnamen enthalten, das zweite den Benutzernamen. </li>
-      <li>In beiden Namen dürfen Tilden (bzw. '~') vorkommen.</li>
-      <li>Es wird der Anfang eines Style-Namens, der einem Benutzernamen-Eintrag entspricht, durch den entspr. Systemnamen
-        ersetzt. </li>
-      <li>Die Kommentarspalte ist dafür irrelevant.</li>
-      <li>Es werden die Dateien adaptions/common/styles/map.xhtml, adaptions/[Verlag]/styles/map.xhtml,
-        adaptions/[Verlag]/[Reihe]/styles/map.xhtml und [Werkdatenverzeichnis]/styles/map.xhtml gesucht und zuammengeführt.
-        Dabei wird jeweils nur die erste Tabelle einer jeden Datei einbezogen. Das Zusammenführen geht so: stimmen zwei Einträge
-        bzgl. des Systemnamens überein, gewinnt der Eintrag aus der spezifischeren Datei. </li>
-      <li>Die zusammengeführte Datei erscheint auch im debug-Verzeichnis als style-mapping/consolidated-map.xhtml. Sie enthält
-        in einer linken Spalte, die aus th-Elementen besteht, einen Verweis auf die für die jeweilige Zeile verwendete
-        Quelldatei. </li>
-      <li>Diese Datei enthält anfangs alle bisher hinterlegten Verlagsregeln. Es könnte eine gute Idee sein, workflowspezifische
-        Regeln in Reihenverzeichnisse auszugliedern. </li>
-    </ul>
+         <li>Zeilen, die kein td enthalten, werden ignoriert.</li>
+         <li>Ansonsten muss das erste td in einer Zeile den Systemnamen enthalten, das zweite den
+            Benutzernamen.
+         </li>
+        <li>Die zweite Spalte enthält eine Regex, die erste ihre Ersetzung. Bei der Ersetzung
+        kann mit <code>$1</code>, <code>$2</code>, … auf geklammerte Gruppen Bezug genommen werden. 
+          Verankerung am Beginn des Suchstrings erfolgt mit <code>^</code>. Wenn man alternativ
+        das Ende des Strings oder eine Tilde matchen will, schreibt man am Ende <code>(~|$)</code>,
+          muss dann aber in der Ersetzung die geklammerte Gruppe wieder einfügen.</li>
+         <li>Die Tilde ('~') und '_-_' kann in den ersten beiden Spalten synonym verwendet werden.
+         In einem Zeichenbereich wie z.B. <code>[-_a-z.]</code> darf man keine Tilde verwenden.</li>
+        <li>Es wird von Anfang bis Ende jede Ersetzung auf das Ergebnis der vorigen Ersetzung
+        angewandt. Spezifischere Ersetzungen müssen nun weiter oben stehen. Also erst <code>ch_fett_kursiv_Schrift2</code>,
+        dann <code>ch_fett_kursiv</code>, dann <code>ch_fett</code>.</li>
+         <li>In beiden Namen dürfen Tilden (bzw. '~') vorkommen.</li>
+         <li>Die Kommentarspalte ist irrelevant.</li>
+         <li>Es werden die Dateien adaptions/common/styles/map.xhtml, adaptions/[Verlag]/styles/map.xhtml,
+            adaptions/[Verlag]/[Reihe]/styles/map.xhtml
+            und [Werkdatenverzeichnis]/styles/map.xhtml gesucht und zuammengeführt. Dabei wird
+            jeweils nur die erste Tabelle einer jeden Datei einbezogen. Das
+            Zusammenführen geht so: stimmen zwei Einträge bzgl. des Systemnamens überein, gewinnt
+            der Eintrag aus der spezifischeren Datei.
+         </li>
+         <li>Die zusammengeführte Datei erscheint auch im debug-Verzeichnis als style-mapping/consolidated-map.xhtml.
+            Sie enthält in einer linken
+            Spalte, die aus th-Elementen besteht, einen Verweis auf die für die jeweilige Zeile
+            verwendete Quelldatei.
+         </li>
+      </ul>
   </body>
 </html>
