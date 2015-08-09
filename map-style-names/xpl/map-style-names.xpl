@@ -180,7 +180,7 @@
     <p:option name="map-name" required="false" select="'styles/map.xhtml'"/>
     <p:option name="status-dir-uri" required="false" select="'debug/status'"/>
     
-    <transpect:load-whole-cascade name="all-maps">
+    <transpect:load-whole-cascade name="all-maps" order="most-specific-first">
       <p:with-option name="filename" select="$map-name">
         <p:empty/>
       </p:with-option>

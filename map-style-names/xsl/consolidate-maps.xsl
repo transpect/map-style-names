@@ -10,12 +10,11 @@
   <xsl:variable name="htmldocs" select="collection()[//table]" as="document-node(element(html))*"/>
   
   <xsl:template name="main">
-    <!-- Transform the last (most specific) document in the default collection() that has been loaded 
-      by transpect:load-whole-cascade. All the documents are supposed to be XHTML 1.0 documents 
+    <!-- Transform the first (most specific) document in the default collection() that has been loaded 
+      by transpect:load-whole-cascade (with order=most-specific-first). All the documents are supposed to be XHTML 1.0 documents 
       that provide style name mappings. The table rows within a documents are expected to be sorted by
       decreasing specificity. When an element with the same ID is present in a more specific document, this 
       more specific element will be used. -->
-    <xsl:message select="'CCCCCCCCCCCCCCCCCCCCCC ', exists($htmldocs//table), string-join(reverse(collection())/base-uri(), ' ')"></xsl:message>
     <xsl:choose>
       <xsl:when test="$htmldocs">
         <xsl:apply-templates select="$htmldocs[1]" mode="resolve-cascade"/>
@@ -32,7 +31,7 @@
       <xsl:copy-of select="@*"/>
       <xsl:variable name="all-trs" as="element(tr)+" 
         select="$htmldocs//table[. is (//table)[1]]
-                           //tr[every $c in *[position() gt 1] satisfies ($c/self::html:td) and count(html:td) ge 2]"/>
+                          //tr[every $c in *[position() gt 1] satisfies ($c/self::html:td) and count(html:td) ge 2]"/>
       <xsl:variable name="max-row-length" as="xs:integer" select="xs:integer(max(for $tr in $all-trs return count($tr/td)))"/>
       <xsl:for-each select="descendant::tr[th][every $c in * satisfies ($c/self::th)]">
         <xsl:copy>
@@ -44,7 +43,7 @@
           </xsl:for-each>
         </xsl:copy>
       </xsl:for-each>
-      <xsl:for-each-group group-by="td[2]" select="reverse($all-trs)">
+      <xsl:for-each-group group-by="td[2]" select="$all-trs">
         <xsl:variable name="first" select="current-group()[1]" as="element(tr)"/>
         <xsl:copy>
           <xsl:copy-of select="@*"/>
