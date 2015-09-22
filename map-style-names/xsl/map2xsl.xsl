@@ -22,7 +22,8 @@
         </xslout:copy>
       </xslout:template>
       <xslout:template match="css:rule/@old-name"/>
-      <xsl:apply-templates select="descendant::css:rule[@old-name]">
+      <xslout:template match="css:rule[@remove]"/>
+      <xsl:apply-templates select="descendant::css:rule[@old-name | @remove]">
         <xsl:with-param name="css:rule-selection-attribute-names" as="xs:string+" 
           select="tokenize($rule-selection-attribute-names, '\s+')"/>
       </xsl:apply-templates>
@@ -51,4 +52,11 @@
     </xsl:for-each>
   </xsl:template>
 
+  <xsl:template match="css:rule[@remove]">
+    <xsl:param name="css:rule-selection-attribute-names" as="xs:string+"/>
+    <xsl:variable name="remove" select="@remove" as="xs:string"/>
+    <xsl:for-each select="$css:rule-selection-attribute-names">
+      <xslout:template match="@{.}[. = '{$remove}']"/>
+    </xsl:for-each>
+  </xsl:template>
 </xsl:stylesheet>
