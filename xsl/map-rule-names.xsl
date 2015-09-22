@@ -52,15 +52,25 @@
 
   <xsl:template match="css:rule">
     <xsl:variable name="context" as="element(css:rule)" select="."/>
+    <xsl:variable name="mapped" as="item()+" select="css:apply-mappings(@name, @native-name, $mapping-regexes, ())"/>
     <xsl:copy copy-namespaces="no">
       <xsl:apply-templates select="@*"/>
-      <xsl:variable name="mapped" as="item()+" select="css:apply-mappings(@name, @native-name, $mapping-regexes, ())"/>
-      <xsl:if test="not($mapped[name() = 'name'] = @name)">
-        <xsl:attribute name="old-name" select="@name"/>
-      </xsl:if>
+      <xsl:choose>
+        <xsl:when test="$mapped[name() = 'name'] = ''">
+          <xsl:attribute name="remove" select="@name"/>
+        </xsl:when>
+        <xsl:when test="not($mapped[name() = 'name'] = @name)">
+          <xsl:attribute name="old-name" select="@name"/>
+        </xsl:when>
+      </xsl:choose>
       <xsl:sequence select="$mapped"/>
       <xsl:apply-templates/>
     </xsl:copy>
+    <xsl:if test="$mapped[name() = 'name'] = ''">
+      <xsl:text>&#xa;             </xsl:text>
+      <xsl:comment>Removed css:rule with name '<xsl:value-of select="@name"/>' / native name '<xsl:value-of 
+        select="@native-name"/>' because its name was mapped to the empty string.</xsl:comment>
+    </xsl:if>
   </xsl:template>
 
   <xsl:function name="css:apply-mappings" as="item()+">
@@ -125,20 +135,5 @@
                             )"/>
     </xsl:if>
   </xsl:function>
-  
-  <!--<xsl:variable name="topmost-rule-scopes" as="element(*)*">
-    <xsl:variable name="rules-ancestors" as="element(rule-ancestor)*">
-      <xsl:for-each select="$rules-elements/ancestor::*">
-        <xsl:variable name="current-ancestor" as="element(*)" select="."/>
-        <rule-ancestor depth="{count(ancestor::*)}">
-          <xsl:attribute name="rules-element-ids" separator=" " 
-            select="for $rs in $rules-elements[some $a in ancestor::* satisfies ($a is $current-ancestor)]
-                    return generate-id($rs)">
-          </xsl:attribute>
-        </rule-ancestor>
-      </xsl:for-each>
-    </xsl:variable>
-  </xsl:variable>--> 
-
 
 </xsl:stylesheet>
