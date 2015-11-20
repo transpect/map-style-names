@@ -3,17 +3,16 @@
   xmlns:p="http://www.w3.org/ns/xproc" 
   xmlns:c="http://www.w3.org/ns/xproc-step"  
   xmlns:cx="http://xmlcalabash.com/ns/extensions"
-  xmlns:letex="http://www.le-tex.de/namespace"
+  xmlns:tr="http://transpect.io"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:css="http://www.w3.org/1996/css"
-  xmlns:transpect="http://www.le-tex.de/namespace/transpect"
   xmlns:html="http://www.w3.org/1999/xhtml"
   version="1.0">
 
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
-  <p:import href="http://transpect.le-tex.de/xproc-util/xslt-mode/xslt-mode.xpl"/>
-  <p:import href="http://transpect.le-tex.de/xproc-util/store-debug/store-debug.xpl"/>
-  <p:import href="http://transpect.le-tex.de/book-conversion/converter/xpl/load-cascaded.xpl"/>
+  <p:import href="http://transpect.io/xproc-util/xslt-mode/xpl/xslt-mode.xpl"/>
+  <p:import href="http://transpect.io/cascade/xpl/load-cascaded.xpl"/>
+  <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl" />
 
   <p:declare-step name="consolidate-maps" type="css:consolidate-maps">
     <p:input port="source" primary="true" sequence="true">
@@ -43,10 +42,10 @@
         <p:empty/>
       </p:input>
     </p:xslt>
-    <letex:store-debug pipeline-step="map-style-names/consolidated-map" extension="xhtml">
+    <tr:store-debug pipeline-step="map-style-names/consolidated-map" extension="xhtml">
       <p:with-option name="active" select="$debug"/>
       <p:with-option name="base-uri" select="$debug-dir-uri"/>
-    </letex:store-debug>
+    </tr:store-debug>
 
   </p:declare-step>
 
@@ -92,10 +91,10 @@
             </p:input>
           </p:xslt>
         </p:viewport>
-        <letex:store-debug pipeline-step="map-style-names/map-rule-names" name="store-patched-rules">
+        <tr:store-debug pipeline-step="map-style-names/map-rule-names" name="store-patched-rules">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
-        </letex:store-debug>
+        </tr:store-debug>
         <p:xslt name="stylesheet-from-mapped-rules">
           <p:input port="stylesheet">
             <p:pipe port="generating-xsl" step="apply-map"/>
@@ -107,10 +106,10 @@
             <p:pipe port="source" step="apply-map"/>
           </p:with-param>
         </p:xslt>
-        <letex:store-debug pipeline-step="map-style-names/generated" extension="xsl" name="store">
+        <tr:store-debug pipeline-step="map-style-names/generated" extension="xsl" name="store">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
-        </letex:store-debug>
+        </tr:store-debug>
         <p:sink/>
         <p:xslt name="apply-generated-xsl">
           <p:input port="source">
@@ -123,10 +122,10 @@
             <p:pipe port="result" step="stylesheet-from-mapped-rules"/>
           </p:input>
         </p:xslt>
-        <letex:store-debug pipeline-step="map-style-names/completed">
+        <tr:store-debug pipeline-step="map-style-names/completed">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
-        </letex:store-debug>
+        </tr:store-debug>
       </p:otherwise>
     </p:choose>
     
@@ -180,14 +179,14 @@
     <p:option name="map-name" required="false" select="'styles/map.xhtml'"/>
     <p:option name="status-dir-uri" required="false" select="'debug/status'"/>
     
-    <transpect:load-whole-cascade name="all-maps" order="most-specific-first">
+    <tr:load-whole-cascade name="all-maps" order="most-specific-first">
       <p:with-option name="filename" select="$map-name">
         <p:empty/>
       </p:with-option>
       <p:input port="paths">
         <p:pipe port="paths" step="map-styles"/>
       </p:input>
-    </transpect:load-whole-cascade>
+    </tr:load-whole-cascade>
 
     <css:consolidate-maps name="consolidate-maps">
       <p:with-option name="debug" select="$debug"><p:empty/></p:with-option>
@@ -210,11 +209,11 @@
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
       </css:apply-map>
-      <letex:store-debug name="store">
+      <tr:store-debug name="store">
         <p:with-option name="pipeline-step" select="concat('map-style-names/', replace(base-uri(), '^.+/(.+?)(\..+)?', '$1'), '.processed')"/>
         <p:with-option name="active" select="$debug"/>
         <p:with-option name="base-uri" select="$debug-dir-uri"/>
-      </letex:store-debug>
+      </tr:store-debug>
     </p:for-each>
 
     

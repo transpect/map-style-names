@@ -3,7 +3,7 @@
   xmlns:p="http://www.w3.org/ns/xproc" 
   xmlns:c="http://www.w3.org/ns/xproc-step"  
   xmlns:cx="http://xmlcalabash.com/ns/extensions"
-  xmlns:letex="http://www.le-tex.de/namespace"
+  xmlns:tr="http://transpect.io"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:css="http://www.w3.org/1996/css"
   xmlns:html="http://www.w3.org/1999/xhtml"
