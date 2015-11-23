@@ -19,7 +19,7 @@
   <p:option name="debug-dir-uri" required="false" select="'debug'"/>
 
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl"/>
-  <p:import href="http://transpect.le-tex.de/map-style-names/xpl/map-style-names.xpl"/>
+  <p:import href="http://transpect.io/map-style-names/xpl/map-style-names.xpl"/>
   
   <css:apply-map name="apply-map">
     <p:with-option name="debug" select="$debug"><p:empty/></p:with-option>

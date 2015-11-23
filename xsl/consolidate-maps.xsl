@@ -11,7 +11,7 @@
   
   <xsl:template name="main">
     <!-- Transform the first (most specific) document in the default collection() that has been loaded 
-      by transpect:load-whole-cascade (with order=most-specific-first). All the documents are supposed to be XHTML 1.0 documents 
+      by tr:load-whole-cascade (with order=most-specific-first). All the documents are supposed to be XHTML 1.0 documents 
       that provide style name mappings. The table rows within a documents are expected to be sorted by
       decreasing specificity. When an element with the same ID is present in a more specific document, this 
       more specific element will be used. -->
