@@ -15,6 +15,16 @@
   <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl" />
 
   <p:declare-step name="consolidate-maps" type="css:consolidate-maps">
+    <p:documentation>Style maps will be consolidated such that the most specific mappings come first.
+    If less specific mappings have the same matching pattern (2nd columns literally equal), they won’t be included.
+    A rule (HTML tr element) may optionally have classes 'initial' or 'final'. The initial rules will be consolidated
+    to the beginning of the consolidated map, in reverse-specificity order (most general map file first, within each file
+    still in document order). In case of identical matching regexes, the least specific rule will win for initial classes.
+    The class 'final' will probably be attached to specific rules. Its effect will be that these rules come after the more
+    generic rules, in contrast to ordinary sort order. That means that they will be applied last.
+    With final rules, the sort order is also from generic to specific files, as for initial rules. In case of matching 
+    pattern identity, the most specific rule will win.
+    </p:documentation>
     <p:input port="source" primary="true" sequence="true">
       <p:documentation>HTML tables where the first column contains system names for styles and the second column contains the
         corresponding user-defined names. A third column may contain comments. </p:documentation>

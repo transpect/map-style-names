@@ -44,7 +44,9 @@
         </xsl:copy>
       </xsl:for-each>
       <xsl:for-each-group group-by="td[2]" select="$all-trs">
-        <xsl:variable name="first" select="current-group()[1]" as="element(tr)"/>
+        <xsl:sort select="html:tr-class-order(@class)" order="ascending"/>
+        <xsl:variable name="first" as="element(html:tr)" 
+          select="if (@class = 'initial') then current-group()[last()] else current-group()[1]"/>
         <xsl:copy>
           <xsl:copy-of select="@*"/>
           <th><a href="{base-uri($first)}"><xsl:value-of select="replace(base-uri($first), '^.+/+(.+?)/+.+?/+.+?\.x?html#?$', '$1')"/></a></th>
@@ -56,6 +58,26 @@
       </xsl:for-each-group>
     </xsl:copy>
   </xsl:template>
+  
+  <xsl:function name="html:tr-class-order" as="xs:integer">
+    <xsl:param name="class" as="attribute(class)?"/>
+    <xsl:variable name="s9y" as="xs:integer" 
+      select="if (empty($class)) then 0 
+              else index-of(for $h in $htmldocs return string(base-uri($h)), string(base-uri(root($class))))"/>
+    <xsl:choose>
+      <xsl:when test="$class = 'initial'">
+        <!-- most generic (last document) will be sorted first when sorting in ascending order -->
+        <xsl:sequence select="- $s9y"/>
+      </xsl:when>
+      <xsl:when test="$class = 'final'">
+        <xsl:sequence select="count($htmldocs) - $s9y + 1"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- no (or other) class -->
+        <xsl:sequence select="0"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
   
   <xsl:template match="* | @*" mode="resolve-cascade">
     <xsl:copy>
