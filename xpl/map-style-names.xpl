@@ -161,8 +161,11 @@
           If native-name matches, the replacement is taken from first column and applied to native-name. The name attribute
         will then be generated from the updated native-name attribute.</li>
         <li>The comment column is irrelevant to the mapping process.</li>
-        <li>If there are multiple style maps in a configuration hierarchy, they will be merged. If the system names of two rows
-          match, the row from the more specific map file will win.</li>
+        <li>If there are multiple style maps in a configuration hierarchy, they will be merged. If the regexes (2nd columne) 
+          of two rows match, the row from the more specific map file will win (except when the table row of the more generic 
+          file has an 'initial' class, see next item.</li>
+        <li>There are two meaningful class attributes for the tr elements, 'initial' and 'final'. Their use case and effect 
+        is described in the documentation of css:consolidate-maps in this library.</li>
         <li>The merged file will appear in the debug dir als map-style-names/consolidated-map.xhtml. It will contain provenance
           information in the first, all-<code>th</code> column, as links to the source map file for each rule.</li>
       </ul>
