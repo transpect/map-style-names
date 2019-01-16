@@ -2,7 +2,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:html="http://www.w3.org/1999/xhtml" 
-  exclude-result-prefixes="xs html"
+  xmlns:tr="http://transpect.io"
+  exclude-result-prefixes="xs html tr"
   xpath-default-namespace="http://www.w3.org/1999/xhtml"
   xmlns="http://www.w3.org/1999/xhtml"
   version="2.0">
@@ -26,12 +27,48 @@
     
   </xsl:template>
   
+  <xsl:template match="tr[count(td)=1][td[every $el in * satisfies $el[self::a[@href]]]]" mode="resolve-txt">
+    <xsl:variable name="path" select="resolve-uri(descendant::a[1]/@href, base-uri())"/>
+      <xsl:variable name="txt" select="unparsed-text($path)"/>
+      <xsl:for-each select="tokenize($txt,'&#xa;')">
+        <tr  rel="{$path}">
+          <xsl:for-each select="tokenize(current(),'&#x9;')">
+            <xsl:sort select="tr:td-order(current())" order="ascending"/>
+            <td>
+              <xsl:sequence select="if (matches(current(),'^[0-9A-Z]+$')) then concat('#',current()) else normalize-space(current())"/>
+            </td>
+          </xsl:for-each>
+        </tr>
+      </xsl:for-each>
+  </xsl:template>
+  
+  <xsl:function name="tr:td-order" as="xs:integer">
+    <xsl:param name="td-text"/>
+    <xsl:choose>
+      <xsl:when test="matches($td-text,'^[0-9A-Z]+$')">
+        <xsl:sequence select="2"/>
+      </xsl:when>
+      <xsl:when test="matches($td-text,'^false$|^true$|^border$|^background$')">
+        <xsl:sequence select="3"/>
+      </xsl:when>
+    <xsl:otherwise>
+      <xsl:sequence select="1"/>
+    </xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
+  
+  <xsl:template match="@rel" mode="resolve-cascade"/>
+  
   <xsl:template match="table[. is (//table)[1]]" mode="resolve-cascade">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
+      <xsl:variable name="resolve-txt-trs">
+        <xsl:apply-templates select="$htmldocs//table[. is (//table)[1]]//tr[count(td)=1][td[every $el in * satisfies $el[self::a[@href]]]]" mode="resolve-txt"/>
+      </xsl:variable>
       <xsl:variable name="all-trs" as="element(tr)+" 
         select="$htmldocs//table[. is (//table)[1]]
-                          //tr[every $c in *[position() gt 1] satisfies ($c/self::html:td) and count(html:td) ge 2]"/>
+                          //tr[every $c in *[position() gt 1] satisfies ($c/self::html:td) and count(html:td) ge 2],
+                $resolve-txt-trs/*"/>
       <xsl:variable name="max-row-length" as="xs:integer" select="xs:integer(max(for $tr in $all-trs return count($tr/td)))"/>
       <xsl:for-each select="descendant::tr[th][every $c in * satisfies ($c/self::th)]">
         <xsl:copy>
@@ -49,7 +86,7 @@
           select="if (@class = 'initial') then current-group()[last()] else current-group()[1]"/>
         <xsl:copy>
           <xsl:copy-of select="@*"/>
-          <th><a href="{base-uri($first)}"><xsl:value-of select="replace(base-uri($first), '^.+/+(.+?)/+.+?/+.+?\.x?html#?$', '$1')"/></a></th>
+          <th><a href="{if (@rel) then @rel else base-uri($first)}"><xsl:value-of select="if (@rel) then replace(@rel,'.*/(.+).txt$','$1') else replace(base-uri($first), '^.+/+(.+?)/+.+?/+.+?\.x?html#?$', '$1')"/></a></th>
           <xsl:copy-of select="$first/td"/>
           <xsl:for-each select="count($first/td) + 1 to $max-row-length">
             <td/>
@@ -79,7 +116,7 @@
     </xsl:choose>
   </xsl:function>
   
-  <xsl:template match="* | @*" mode="resolve-cascade">
+  <xsl:template match="* | @*" mode="resolve-cascade resolve-txt">
     <xsl:copy>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:copy>

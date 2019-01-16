@@ -47,8 +47,39 @@
     select="$mapping-table//html:tr[count(html:td) ge 2]
                                    [every $c in *[position() gt 1] satisfies ($c/self::html:td)]
                             /html:td[2][normalize-space()]"/>
+  
+  <xsl:variable name="mapping-colors" as="element(html:td)*"
+    select="$mapping-table//html:tr[count(html:td) ge 2]
+                                   [every $c in *[position() gt 1] satisfies ($c/self::html:td)]
+                            /html:td[2][normalize-space()][matches(.,'^#')]"/>
 
   <xsl:variable name="rules-elements" as="element(css:rules)*" select="//css:rules"/>
+  
+  <xsl:template match="css:rules">
+    <xsl:copy>
+      <xsl:apply-templates select="@*"/>
+      <xsl:for-each select="$mapping-colors">
+        <xsl:sequence select="css:create-css-rule(current())"/>
+      </xsl:for-each>
+      <xsl:apply-templates select="node()"/>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xsl:function name="css:create-css-rule" as="element(css:rule)+">
+    <xsl:param name="mapping-colors" as="element(html:td)*"/>
+    <xsl:element name="css:rule" namespace="http://www.w3.org/1996/css">
+      <xsl:attribute name="native-name" select="$mapping-colors/../html:td[1]"/>
+      <xsl:choose>
+        <xsl:when test="matches($mapping-colors/../html:td[4],'background')">
+          <xsl:attribute name="css:background-color" select="$mapping-colors/text()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:attribute name="css:border-left-color" select="$mapping-colors/text()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:attribute name="name" select="$mapping-colors/../html:td[1]"/>
+    </xsl:element>
+  </xsl:function>
 
   <xsl:template match="css:rule">
     <xsl:variable name="context" as="element(css:rule)" select="."/>
@@ -135,5 +166,6 @@
                             )"/>
     </xsl:if>
   </xsl:function>
+  
 
 </xsl:stylesheet>

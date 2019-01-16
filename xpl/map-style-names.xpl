@@ -80,6 +80,10 @@
     <p:option name="debug" required="false" select="'no'"/>
     <p:option name="debug-dir-uri" required="false" select="'debug'"/>
     <p:option name="status-dir-uri" required="false" select="'debug/status'"/>
+    <p:option name="remove-border-styles" required="false" select="'no'"/>
+    <p:option name="map-textbox-styles" required="false" select="'no'"/>
+    <p:option name="textbox-style" required="false" select="'Textbox-Style'"/>
+    <p:option name="remove-textboxes" required="false" select="'no'"/>
     <p:choose>
       <p:xpath-context>
         <p:pipe port="map" step="apply-map"/>
@@ -115,6 +119,10 @@
           <p:with-param name="rule-selection-attribute-names" select="/*/@css:rule-selection-attribute" cx:type="xs:string">
             <p:pipe port="source" step="apply-map"/>
           </p:with-param>
+          <p:with-param name="remove-border-styles" select="$remove-border-styles"/>
+          <p:with-param name="map-textbox-styles" select="$map-textbox-styles"/>
+          <p:with-param name="textbox-style" select="$textbox-style"/>
+          <p:with-param name="remove-textboxes" select="$remove-textboxes"/>
         </p:xslt>
         <tr:store-debug pipeline-step="map-style-names/generated" extension="xsl" name="store">
           <p:with-option name="active" select="$debug"/>
@@ -168,6 +176,8 @@
         is described in the documentation of css:consolidate-maps in this library.</li>
         <li>The merged file will appear in the debug dir als map-style-names/consolidated-map.xhtml. It will contain provenance
           information in the first, all-<code>th</code> column, as links to the source map file for each rule.</li>
+        <li>It also possible to map color codes (applied on border styles or background) to style names.</li>
+        <li>The mapping can be expanded by using external txt files</li>
       </ul>
     </p:documentation>
     <p:input port="source" primary="true" sequence="true">
@@ -191,6 +201,10 @@
     <p:option name="debug-dir-uri" required="false" select="'debug'"/>
     <p:option name="map-name" required="false" select="'styles/map.xhtml'"/>
     <p:option name="status-dir-uri" required="false" select="'debug/status'"/>
+    <p:option name="remove-border-styles" required="false" select="'no'"/>
+    <p:option name="map-textbox-styles" required="false" select="'no'"/>
+    <p:option name="textbox-style" required="false" select="'Textbox-Style'"/>
+    <p:option name="remove-textboxes" required="false" select="'no'"/>
     
     <tr:load-whole-cascade name="all-maps" order="most-specific-first">
       <p:with-option name="filename" select="$map-name">
@@ -221,6 +235,10 @@
         </p:input>
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+        <p:with-option name="remove-border-styles"  select="$remove-border-styles"/>
+        <p:with-option name="map-textbox-styles"  select="$map-textbox-styles"/>
+        <p:with-option name="textbox-style"  select="$textbox-style"/>
+        <p:with-option name="remove-textboxes" select="$remove-textboxes"/>
       </css:apply-map>
       <tr:store-debug name="store">
         <p:with-option name="pipeline-step" select="concat('map-style-names/', replace(base-uri(), '^.+/(.+?)(\..+)?', '$1'), '.processed')"/>
