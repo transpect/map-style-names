@@ -78,7 +78,7 @@
     <xsl:variable name="border-color" as="xs:string" select="@css:border-left-color"/>
     <xsl:variable name="role" as="xs:string" select="@name"/>
     <xsl:for-each select="$css:rule-selection-attribute-names">
-      <xslout:template match="*[@css:border-left-color][@css:border-left-color = '{$border-color}']">
+      <xslout:template match="*[not(self::css:rule)][@css:border-left-color][@css:border-left-color = '{$border-color}']">
         <xslout:copy>
           <xslout:attribute name="role" select="'{$role}'"/>
           <xslout:apply-templates select="if ($remove-border-styles=('yes','true')) then @* except (@css:border-left-color,@css:border-left-style,@css:border-left-width) else @* "/>
@@ -93,7 +93,7 @@
     <xsl:variable name="background-color" as="xs:string" select="@css:background-color"/>
     <xsl:variable name="role" as="xs:string" select="@name"/>
     <xsl:for-each select="$css:rule-selection-attribute-names">
-      <xslout:template match="*[@css:background-color][@css:background-color = '{$background-color}']">
+      <xslout:template match="*[not(self::css:rule)][@css:background-color][@css:background-color = '{$background-color}']">
         <xslout:copy>
           <xslout:attribute name="role" select="'{$role}'"/>
           <xslout:apply-templates select="if ($remove-border-styles=('yes','true')) then @* except (@css:background-color) else @* "/>

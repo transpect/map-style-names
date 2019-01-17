@@ -87,6 +87,9 @@
          <css:rule native-name="ch_kursiv_fett" name="chkursivfett"/>
       </css:rules>
    </info>
+  <para  css:border-left-style="solid"
+        css:border-left-width="6pt"
+        css:border-left-color="#000000"/>
    <para role="Hauptteil_Grundtext_GT_-_stumpf"/>
    <para role="Frontmatter_Titelei_HT_Titel"/>
    <para role="Hauptteil_Grundtext_GT_-_stumpf"/>
