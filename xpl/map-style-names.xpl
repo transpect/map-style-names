@@ -84,6 +84,7 @@
     <p:option name="map-textbox-styles" required="false" select="'no'"/>
     <p:option name="textbox-style" required="false" select="'Textbox-Style'"/>
     <p:option name="remove-textboxes" required="false" select="'no'"/>
+    <p:option name="color-mapping" select="'yes'"/>
     <p:choose>
       <p:xpath-context>
         <p:pipe port="map" step="apply-map"/>
@@ -123,6 +124,7 @@
           <p:with-param name="map-textbox-styles" select="$map-textbox-styles"/>
           <p:with-param name="textbox-style" select="$textbox-style"/>
           <p:with-param name="remove-textboxes" select="$remove-textboxes"/>
+          <p:with-param name="color-mapping" select="$color-mapping"/>
         </p:xslt>
         <tr:store-debug pipeline-step="map-style-names/generated" extension="xsl" name="store">
           <p:with-option name="active" select="$debug"/>
@@ -205,6 +207,11 @@
     <p:option name="map-textbox-styles" required="false" select="'no'"/>
     <p:option name="textbox-style" required="false" select="'Textbox-Style'"/>
     <p:option name="remove-textboxes" required="false" select="'no'"/>
+    <p:option name="color-mapping" select="'yes'">
+      <p:documentation>Whether to use css:border-left-color and css:background-color information to map text item 
+        (usually paragraph) styles. Most workflows won’t need it but it is set to yes by default in order not
+      to cause compatibility issues for workflows that already rely on this mechanism.</p:documentation>
+    </p:option>
     
     <tr:load-whole-cascade name="all-maps" order="most-specific-first">
       <p:with-option name="filename" select="$map-name">
@@ -239,6 +246,7 @@
         <p:with-option name="map-textbox-styles"  select="$map-textbox-styles"/>
         <p:with-option name="textbox-style"  select="$textbox-style"/>
         <p:with-option name="remove-textboxes" select="$remove-textboxes"/>
+        <p:with-option name="color-mapping" select="$color-mapping"/>
       </css:apply-map>
       <tr:store-debug name="store">
         <p:with-option name="pipeline-step" select="concat('map-style-names/', replace(base-uri(), '^.+/(.+?)(\..+)?', '$1'), '.processed')"/>
