@@ -82,22 +82,27 @@
       <xslout:template match="*[not(self::css:rule)][@css:border-left-color = '{$border-color}']">
         <xslout:copy>
           <xslout:attribute name="role" select="'{$role}'"/>
-          <xslout:apply-templates select="if ($remove-border-styles=('yes','true')) then @* except (@css:border-left-color,@css:border-left-style,@css:border-left-width) else @* "/>
+          <xslout:apply-templates select="if ($remove-border-styles=('yes','true')) 
+                                          then @* except (@css:border-left-color,@css:border-left-style,@css:border-left-width) 
+                                          else @* "/>
           <xslout:apply-templates select="node()"/>
         </xslout:copy>
       </xslout:template>
     </xsl:for-each>
   </xsl:template>
   
-  <xsl:template match="css:rule[@css:background-color][$color-mapping = 'yes']" priority="2">
+  <xsl:template match="css:rule[@css:background-color][$color-mapping = 'yes']" priority="3">
     <xsl:param name="css:rule-selection-attribute-names" as="xs:string+"/>
     <xsl:variable name="background-color" as="xs:string" select="@css:background-color"/>
     <xsl:variable name="role" as="xs:string" select="@name"/>
     <xsl:for-each select="$css:rule-selection-attribute-names">
-      <xslout:template match="*[not(self::css:rule)][@css:background-color = '{$background-color}']">
+      <xslout:template match="*[not(self::css:rule)][@css:background-color = '{$background-color}']" priority="1">
         <xslout:copy>
           <xslout:attribute name="role" select="'{$role}'"/>
-          <xslout:apply-templates select="if ($remove-border-styles=('yes','true')) then @* except (@css:background-color) else @* "/>
+          <xslout:apply-templates select="if ($remove-border-styles=('yes','true')) 
+                                          then @* except (@css:background-color, @css:border-left-color,
+                                                          @css:border-left-style,@css:border-left-width) 
+                                          else @* "/>
           <xslout:apply-templates select="node()"/>
         </xslout:copy>
       </xslout:template>
