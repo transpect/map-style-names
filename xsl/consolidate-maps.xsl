@@ -95,6 +95,10 @@
       </xsl:for-each-group>
     </xsl:copy>
   </xsl:template>
+
+  <xsl:template match="table[. is (//table)[1]][count(html:tr) = 1][html:tr/html:th[1] = 'Systemname']" mode="resolve-cascade" priority="2">
+    <xsl:message select="'Empty mapping table. Nothing to map.'"/>
+  </xsl:template>
   
   <xsl:function name="html:tr-class-order" as="xs:integer">
     <xsl:param name="class" as="attribute(class)?"/>
