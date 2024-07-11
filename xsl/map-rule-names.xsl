@@ -6,6 +6,8 @@
   xmlns:css="http://www.w3.org/1996/css"
   version="2.0">
   
+  <xsl:param name="map-case-insensitive" select="'no'"/>
+  
   <xsl:template match="node() | @*" mode="#default add-css-compat-regex">
     <xsl:copy>
       <xsl:apply-templates select="@*, node()"/>
@@ -109,25 +111,26 @@
     <xsl:param name="native-name" as="attribute(native-name)?"/>
     <xsl:param name="mapping-regexes" as="element(html:td)*"/>
     <xsl:param name="history" as="comment()*"/>
+    <xsl:variable name="mapping-flags" select="if ($map-case-insensitive='yes') then 'i' else ()"/>
     <xsl:choose>
       <xsl:when test="exists($mapping-regexes)">
         <xsl:variable name="apply-current-mapping" as="item()+">
           <xsl:choose>
-            <xsl:when test="matches($native-name, $mapping-regexes[1])">
+            <xsl:when test="matches($native-name, $mapping-regexes[1], $mapping-flags)">
               <xsl:variable name="mapped" as="xs:string" 
-                select="replace($native-name, $mapping-regexes[1], $mapping-regexes[1]/../html:td[1])"/>
+                select="replace($native-name, $mapping-regexes[1], $mapping-regexes[1]/../html:td[1], $mapping-flags)"/>
               <xsl:attribute name="native-name" select="$mapped"/>
               <xsl:attribute name="name" select="css:escape-native-name($mapped)"/>
-              <xsl:comment select="string-join(($mapping-regexes[1], $mapping-regexes[1]/../html:td[1]), ' → '), '(native-name)'"/>
+              <xsl:comment select="string-join(($mapping-regexes[1], $mapping-regexes[1]/../html:td[1], $mapping-flags), ' → '), '(native-name)'"/>
             </xsl:when>
-            <xsl:when test="matches($name, $mapping-regexes[1]/following-sibling::*[1])">
+            <xsl:when test="matches($name, $mapping-regexes[1]/following-sibling::*[1], $mapping-flags)">
               <xsl:attribute name="name"  
                 select="css:escape-native-name(
                           replace(
                             $name, 
                             $mapping-regexes[1]/following-sibling::*[1], 
-                            $mapping-regexes[1]/../html:td[1]
-                          )
+                            $mapping-regexes[1]/../html:td[1],
+                            $mapping-flags)
                         )"/>
               <xsl:comment select="string-join(($mapping-regexes[1], $mapping-regexes[1]/following-sibling::*[1], 
                                                 $mapping-regexes[1]/../html:td[1]), ' → '), '(name)'"/>

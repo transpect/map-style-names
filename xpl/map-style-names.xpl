@@ -85,6 +85,7 @@
     <p:option name="textbox-style" required="false" select="'Textbox-Style'"/>
     <p:option name="remove-textboxes" required="false" select="'no'"/>
     <p:option name="color-mapping" select="'yes'"/>
+    <p:option name="map-case-insensitive" select="'no'"/>
     <p:choose>
       <p:xpath-context>
         <p:pipe port="map" step="apply-map"/>
@@ -104,6 +105,7 @@
             <p:input port="stylesheet">
               <p:pipe port="rule-name-mapping-xsl" step="apply-map"/>
             </p:input>
+            <p:with-param name="map-case-insensitive" select="$map-case-insensitive"/>
           </p:xslt>
         </p:viewport>
         <tr:store-debug pipeline-step="map-style-names/map-rule-names" name="store-patched-rules">
