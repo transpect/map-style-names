@@ -106,6 +106,26 @@
     </xsl:if>
   </xsl:template>
 
+  <xsl:function name="css:match-with-optional-flag" as="xs:boolean">
+    <xsl:param name="context" as="node()?"/>
+    <xsl:param name="matching-regex" as="xs:string"/>
+    <xsl:param name="flag" as="xs:string?"/>
+    <xsl:sequence select="if ($flag[matches(., '[ismx]+')]) 
+                          then matches($context, $matching-regex, $flag) 
+                          else matches($context, $matching-regex)"/>
+  </xsl:function>
+  
+  <xsl:function name="css:replace-with-optional-flag" as="xs:string?">
+    <xsl:param name="context" as="node()?"/>
+    <xsl:param name="matching-regex" as="xs:string"/>
+    <xsl:param name="replacing-regex" as="xs:string"/>
+    <xsl:param name="flag" as="xs:string?"/>
+    <xsl:sequence select="if ($flag[matches(., '[ismx]+')])
+                          then replace($context, $matching-regex, $replacing-regex, $flag) 
+                          else replace($context, $matching-regex, $replacing-regex)"/>
+  </xsl:function>
+  
+  
   <xsl:function name="css:apply-mappings" as="item()+">
     <xsl:param name="name" as="attribute(name)"/>
     <xsl:param name="native-name" as="attribute(native-name)?"/>
@@ -116,17 +136,17 @@
       <xsl:when test="exists($mapping-regexes)">
         <xsl:variable name="apply-current-mapping" as="item()+">
           <xsl:choose>
-            <xsl:when test="matches($native-name, $mapping-regexes[1], $mapping-flags)">
+            <xsl:when test="css:match-with-optional-flag($native-name, $mapping-regexes[1], $mapping-flags)">
               <xsl:variable name="mapped" as="xs:string" 
-                select="replace($native-name, $mapping-regexes[1], $mapping-regexes[1]/../html:td[1], $mapping-flags)"/>
+                select="css:replace-with-optional-flag($native-name, $mapping-regexes[1], $mapping-regexes[1]/../html:td[1], $mapping-flags)"/>
               <xsl:attribute name="native-name" select="$mapped"/>
               <xsl:attribute name="name" select="css:escape-native-name($mapped)"/>
               <xsl:comment select="string-join(($mapping-regexes[1], $mapping-regexes[1]/../html:td[1], $mapping-flags), ' → '), '(native-name)'"/>
             </xsl:when>
-            <xsl:when test="matches($name, $mapping-regexes[1]/following-sibling::*[1], $mapping-flags)">
+            <xsl:when test="css:match-with-optional-flag($name, $mapping-regexes[1]/following-sibling::*[1], $mapping-flags)">
               <xsl:attribute name="name"  
                 select="css:escape-native-name(
-                          replace(
+                          css:replace-with-optional-flag(
                             $name, 
                             $mapping-regexes[1]/following-sibling::*[1], 
                             $mapping-regexes[1]/../html:td[1],
